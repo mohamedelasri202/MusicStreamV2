@@ -41,7 +41,7 @@ public class  TrackInterfaceImpl  implements TrackService {
         @Transactional
     public TrackResponseDto addTrack(TrackRequestDto requestDto){
 //        Track  track = trackMapper.toEntity(requestDto);
-            try{
+
                 String savedPath = saveFile(requestDto.getFile());
                 File mp3File = new File(savedPath);
                 double duration = audioDuration(mp3File);
@@ -53,13 +53,11 @@ public class  TrackInterfaceImpl  implements TrackService {
                 Track savedTrack = trackRepository.save(track);
                 return trackMapper.toDto(savedTrack);
 
-            }   catch (IOException e) {
-                throw new IllegalStateException("Failed to save uploaded file", e);
-            }
+    }
 
-
-
-
+    public void deleteTrack(long id){
+        Track track = trackRepository.findById(id).orElseThrow(()-> new RuntimeException("thers no track with this Id"));
+        trackRepository.delete(track);
     }
 
 
@@ -78,22 +76,24 @@ public class  TrackInterfaceImpl  implements TrackService {
     }
 
     @Transactional
-    public String saveFile(MultipartFile file) throws IOException{
+    @Override
+    public String saveFile(MultipartFile file) {
+        try {
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
 
-        String filePath = System.getProperty("user.dir")+"/uploads/";
-        File fileDirectory = new File(filePath);
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path path = Paths.get(uploadDir, fileName);
 
-        if(!fileDirectory.exists()) fileDirectory.mkdir();
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            return path.toString();
 
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-        Path path = Paths.get(filePath +fileName);
-
-        Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
-         return path.toString();
-
-
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to save MP3 file", e);
+        }
     }
+
 
 
 }
