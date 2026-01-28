@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 @Data
@@ -19,6 +20,6 @@ public class TrackResponseDto {
     private String description;
     private Category category;
     private double duration;
-    private Date addedAt;
+    private Instant addedAt;
     private File file;
 }

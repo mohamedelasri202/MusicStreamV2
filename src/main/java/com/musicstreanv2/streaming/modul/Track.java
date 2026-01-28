@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.Date;
 @Data
 @Entity
@@ -18,7 +19,7 @@ public class Track {
     private String description;
     private Category category;
     private double duration;
-    private Date addedAt;
+    private Instant addedAt;
     private String filePath ;
 
 

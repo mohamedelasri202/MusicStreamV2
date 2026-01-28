@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class  TrackMapper {
 
-    public static Track toEntity (TrackRequestDto dto){
+    public  Track toEntity (TrackRequestDto dto){
         Track track = new Track();
         track.setTitle(dto.getTitle());
         track.setArtist(dto.getArtist());
@@ -18,7 +18,7 @@ public class  TrackMapper {
         return  track;
     }
 
-    public static TrackResponseDto toDto(Track entity){
+    public  TrackResponseDto toDto(Track entity){
         TrackResponseDto dto = new TrackResponseDto();
         dto.setArtist(entity.getArtist());
         dto.setDescription(entity.getDescription());
