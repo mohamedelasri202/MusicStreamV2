@@ -23,6 +23,12 @@
         public ResponseEntity<TrackResponseDto> addTrack(@ModelAttribute TrackRequestDto dto) {
             return ResponseEntity.ok(trackService.addTrack(dto));
         }
+
+        @PutMapping(value = "/updateTrack/{id}", consumes = "multipart/form-data")
+        public ResponseEntity<TrackResponseDto>updateTrack(@PathVariable long id ,@ModelAttribute TrackRequestDto dto){
+            return  ResponseEntity.ok(trackService.updateTrack(dto,id));
+
+        }
         @DeleteMapping("/deleteTrack/{id}")
         public ResponseEntity<String> deleteTrack(@PathVariable long id){
             trackService.deleteTrack(id);

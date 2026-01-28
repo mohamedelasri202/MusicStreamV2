@@ -12,4 +12,5 @@ public interface TrackService {
     double audioDuration(File file);
     String saveFile(MultipartFile file);
     void deleteTrack(long id);
+    TrackResponseDto updateTrack(TrackRequestDto requestDto ,long id);
 }

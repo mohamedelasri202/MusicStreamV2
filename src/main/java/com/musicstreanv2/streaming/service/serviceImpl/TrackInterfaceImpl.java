@@ -54,7 +54,29 @@ public class  TrackInterfaceImpl  implements TrackService {
                 return trackMapper.toDto(savedTrack);
 
     }
+    @Override
+    public TrackResponseDto updateTrack(TrackRequestDto dto,long id){
+        Track track = trackRepository.findById(id).orElseThrow(()-> new RuntimeException("thers no track with this id please try again "));
+        if(dto.getTitle()!= null) track.setTitle(dto.getTitle());
+        if(dto.getCategory()!= null) track.setCategory(dto.getCategory());
+        if(dto.getArtist()!= null) track.setArtist(dto.getArtist());
+        if(dto.getFile()!= null && !dto.getFile().isEmpty()){
+            String newPath =saveFile(dto.getFile());
+            double duration = audioDuration(new File(newPath));
+            track.setFilePath(newPath);
+            track.setDuration(duration);
+        }
+         Track savedTrack = trackRepository.save(track);
+        return trackMapper.toDto(savedTrack);
 
+
+
+
+
+
+
+    }
+    @Override
     public void deleteTrack(long id){
         Track track = trackRepository.findById(id).orElseThrow(()-> new RuntimeException("thers no track with this Id"));
         trackRepository.delete(track);
