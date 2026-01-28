@@ -40,17 +40,30 @@ public class  TrackInterfaceImpl  implements TrackService {
     }
         @Transactional
     public TrackResponseDto addTrack(TrackRequestDto requestDto){
-        Track  track = trackMapper.toEntity(requestDto);
+//        Track  track = trackMapper.toEntity(requestDto);
+            try{
+                String savedPath = saveFile(requestDto.getFile());
+                File mp3File = new File(savedPath);
+                double duration = audioDuration(mp3File);
+                Track track = trackMapper.toEntity(requestDto);
+                track.setDuration(duration);
+                track.setFilePath(savedPath);
+                track.setAddedAt(Instant.now());
 
-        track.setAddedAt(Instant.now());
-        track.setDuration(audioDuration();
+                Track savedTrack = trackRepository.save(track);
+                return trackMapper.toDto(savedTrack);
+
+            }   catch (IOException e) {
+                throw new IllegalStateException("Failed to save uploaded file", e);
+            }
 
 
-        trackRepository.save(track);
+
 
     }
 
 
+    @Transactional
     public double audioDuration(File file){
         try{
             AudioFile audioFile = AudioFileIO.read(file);
@@ -64,6 +77,7 @@ public class  TrackInterfaceImpl  implements TrackService {
 
     }
 
+    @Transactional
     public String saveFile(MultipartFile file) throws IOException{
 
         String filePath = System.getProperty("user.dir")+"/uploads/";

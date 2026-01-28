@@ -5,6 +5,7 @@ import com.musicstreanv2.streaming.enums.Category;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
@@ -16,7 +17,7 @@ public class TrackRequestDto {
     private String artist;
     private String description;
     private Category category;
-    private String  filePath;
+    private MultipartFile file;
 
 
 }

@@ -21,5 +21,5 @@ public class TrackResponseDto {
     private Category category;
     private double duration;
     private Instant addedAt;
-    private File file;
+    private String filePath;
 }
