@@ -1,11 +1,16 @@
 package com.musicstreanv2.streaming.dto;
 
 import com.musicstreanv2.streaming.enums.Category;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Date;
-
+@Data
+@Getter
+@Setter
 public class TrackResponseDto {
 
     private long id ;
@@ -14,6 +19,6 @@ public class TrackResponseDto {
     private String description;
     private Category category;
     private double duration;
-    private LocalDateTime addedAt;
+    private Date addedAt;
     private File file;
 }
