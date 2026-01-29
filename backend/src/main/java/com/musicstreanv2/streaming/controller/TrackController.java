@@ -14,6 +14,7 @@
 
     @RestController
     @RequestMapping("/api/track")
+    @CrossOrigin(origins = "http://localhost:4200")
     public class TrackController {
 
         private final TrackService trackService;

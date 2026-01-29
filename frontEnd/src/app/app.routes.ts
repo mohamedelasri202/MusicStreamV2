@@ -1,0 +1,20 @@
+import { Routes } from '@angular/router';
+
+
+export const routes: Routes = [
+    {
+        path: 'library',
+        loadComponent: () => import('./pages/library/library').then(m => m.Library)
+    }
+    ,
+    {
+        path: 'track-detail/:id',
+        loadComponent: () => import('./pages/track-detail/track-detail').then(m => m.TrackDetail)
+    },
+    {
+        path: '',
+        redirectTo: 'library',
+        pathMatch: 'full'
+    }
+
+];

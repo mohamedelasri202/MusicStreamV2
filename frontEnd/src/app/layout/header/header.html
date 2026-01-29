@@ -1,0 +1,53 @@
+<header
+    class="sticky top-0 z-50 flex items-center justify-between px-6 py-2 bg-black/80 backdrop-blur-xl transition-all duration-300 border-b border-white/5">
+
+    
+    <div class="flex items-center gap-4">
+    
+        <div class="flex items-center gap-2 cursor-pointer group">
+            <div
+                class="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/20 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black fill-current" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" />
+                </svg>
+            </div>
+
+        </div>
+
+   
+        <div class="hidden md:flex items-center bg-neutral-900/50 p-1 rounded-full border border-white/5 ml-4">
+            <button [routerLink]="['/library']"
+                class="flex items-center gap-2 px-6 py-2 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800/50 transition-all group ml-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:text-purple-400 transition-colors"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span class="font-semibold text-sm">Library</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Center: Search Bar -->
+    @if (uiService.showSearchBar()) {
+    <div class="flex-1 max-w-md mx-4 group relative">
+        <div
+            class="relative flex items-center w-full transition-transform duration-200 group-focus-within:scale-[1.02]">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <svg class="w-5 h-5 text-neutral-500 group-focus-within:text-white transition-colors" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                </svg>
+            </div>
+            <input type="search" (input)="uiService.updateSearch(searchInput.value)" #searchInput
+                class="block w-full p-2.5 pl-12 text-sm text-white border-none rounded-full bg-neutral-800/80 hover:bg-neutral-800 focus:bg-neutral-800 focus:ring-2 focus:ring-white/10 placeholder-neutral-400 transition-all shadow-sm group-focus-within:shadow-lg group-focus-within:shadow-black/50"
+                placeholder="What do you want to play?" required>
+        </div>
+    </div>
+    }
+
+    
+    <div class="hidden"></div>
+</header>
