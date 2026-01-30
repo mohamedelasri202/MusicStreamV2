@@ -7,6 +7,19 @@ import {TrackService } from '../../../services/track-service';
 
 @Injectable()
 export  class  TracksEffects{
-  private actions$:Actions
-  private trackService:TrackService
-}{}
+
+  constructor(  private actions$:Actions,
+  private trackService:TrackService) {}
+
+}
+
+loadTracks$= createEffect(()=>
+this.actions$.pipe(
+  ofType(TrackActions.loadTracks),
+  mergeMap(()=>this.trackService.getTracks.pipe(
+    map(tracks =>TrackActions.loadTrackSuccess({tracks})),
+    catchError(error=>of(TrackActions.loadTrackFailure({error:error.message})))
+  ))
+)
+)
+

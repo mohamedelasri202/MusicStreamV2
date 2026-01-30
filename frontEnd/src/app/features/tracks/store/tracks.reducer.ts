@@ -4,9 +4,9 @@ import {Track} from  '../../../modules/track'
 import * as TrackActions from './tracks.actions'
 
 export interface TrackState{
-  tracks :Track<[]>;
+  tracks :Track[];
   loading :boolean;
-  error :String | null;
+  error :string | null;
 }
 
 export  const initialState :TrackState = {
@@ -28,10 +28,10 @@ on(TrackActions.loadTrackSuccess,(state,{tracks}) =>({
   error:null
 })),
 
-  on (TrackActions.loadTrackFailure ,(state ,{error}) =>({
-    ...state ,
-    error:error,
-    loading:false
+  on(TrackActions.loadTrackFailure, (state, { error }) => ({
+    ...state,
+    error,
+    loading: false
   }))
 
   )
