@@ -1,145 +1,21 @@
-<div class="min-h-screen bg-black text-white pb-32">
+<div class="library-container">
+  <h2>My Music Library</h2>
 
-  <!-- Content Container -->
-  <div class="max-w-7xl mx-auto px-6 pt-8">
+  <div *ngIf="tracks$ | async as tracks; else loading">
 
-    <!-- Page Header & Action -->
-    <div class="flex items-end justify-between mb-8 pb-4 border-b border-white/10">
-      <div>
-        <h1 class="text-6xl font-black tracking-tight mb-2">Library</h1>
-        <p class="text-neutral-400 font-medium">Your personal collection</p>
+    <div *ngFor="let track of tracks" class="track-item">
+      <div class="track-info">
+        <span class="title">{{ track.title }}</span>
+        <span class="artist">{{ track.artist }}</span>
+        <span>{{track.duration}}</span>
+        <span>{{track.description}}</span>
       </div>
-
-      <!-- Primary CTA - Toggles Add Track Form or just highlights it -->
-      <button (click)="togleForm()"
-        class="flex items-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-400 text-black rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Add New Song
-      </button>
     </div>
 
-    <!-- Add Track Section (Container for existing component) -->
-    <!-- Ideally this would be conditionally hidden or in a modal, but keeping it visible as per request to make it "easier to see" -->
-    <section class="mb-12 bg-neutral-900/50 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
-      <div class="text-neutral-400 text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-          <path
-            d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
-        </svg>
-        Upload Station
-      </div>
-      <!-- Injecting the component here. Note: The component itself is light-themed, might clash, but we wrap it nicely. -->
-      <app-add-track [trackToEdit]="selectedTrack" *ngIf="isFormVisible" (closeForm)="togleForm()"></app-add-track>
-    </section>
-
-    <!-- Tracks List -->
-    <section>
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold">All Tracks</h2>
-
-        <div class="flex gap-2 relative">
-          <button (click)="toggleFilterMenu()" class="p-2 hover:bg-white/10 rounded-full transition-colors"
-            title="Toggle Menu">
-
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              @if (isMenuOpen()) {
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              } @else {
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              }
-            </svg>
-          </button>
-
-          <div class="absolute top-12 left-0 z-50" *ngIf="isMenuOpen()">
-            <app-filter-menu [selectedOption]="currentSort" (sortSelected)="onSortChange($event)">
-            </app-filter-menu>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Table Header -->
-      <div
-        class="grid grid-cols-12 gap-4 text-neutral-400 border-b border-white/10 pb-2 px-4 text-sm font-medium uppercase tracking-wider">
-        <div class="col-span-1">#</div>
-        <div class="col-span-4">Title</div>
-        <div class="col-span-3">Artist</div>
-        <div class="col-span-2">Date Added</div>
-        <div class="col-span-1 text-right">Duration</div>
-        <div class="col-span-1 text-center">Action</div>
-      </div>
-
-      <!-- Rows -->
-      <div class="mt-2 space-y-1">
-        @for (track of filteredTracks(); track track.id; let i = $index) {
-        <div (click)="playTrack(track)"
-          class="group grid grid-cols-12 gap-4 items-center px-4 py-3 rounded-md hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-white/5">
-
-          <div class="col-span-1 text-neutral-400 font-medium group-hover:text-white relative">
-            <span class="group-hover:hidden">{{i + 1}}</span>
-            <button class="hidden group-hover:block text-white absolute top-1/2 -translate-y-1/2 -left-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </button>
-          </div>
-
-          <div class="col-span-4 min-w-0">
-            <div class="font-semibold truncate text-white text-base">{{track.title}}</div>
-            <div class="text-xs text-neutral-500 truncate group-hover:text-neutral-400">{{track.category}}</div>
-          </div>
-
-          <div class="col-span-3 text-neutral-400 text-sm truncate group-hover:text-white transition-colors">
-            {{track.artist}}
-          </div>
-
-          <div class="col-span-2 text-neutral-500 text-sm font-light">
-            {{track.addedAt || 'Just now'}}
-          </div>
-
-          <div class="col-span-1 text-right text-neutral-500 text-sm font-mono">
-            {{ track.duration || '--:--' }}
-          </div>
-
-          <div
-            class="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <a [routerLink]="['/track-detail', track.id]" (click)="$event.stopPropagation()"
-              class="p-1.5 text-neutral-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors"
-              title="View Details">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </a>
-            <button (click)="updateTrack(track); $event.stopPropagation()"
-              class="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 rounded-full transition-colors"
-              title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </button>
-            <button (click)="deleteTrack(track.id); $event.stopPropagation()"
-              class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
-              title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        }
-      </div>
-    </section>
-
+    <p *ngIf="tracks.length === 0">No music found in the database. 🎵</p>
   </div>
+
+  <ng-template #loading>
+    <p>Loading your music library...</p>
+  </ng-template>
 </div>

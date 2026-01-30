@@ -1,5 +1,6 @@
 import {createReducer , on} from '@ngrx/store'
-import {Track} from  '../../../modules/track'
+// import {Track} from  '../../../modules/track/track-module'
+import {Track} from '../../../modules/track/track-module'
 
 import * as TrackActions from './tracks.actions'
 
@@ -21,7 +22,7 @@ export  const trackReducer  = createReducer(initialState,
     ...state ,
     loading :true
   })),
-on(TrackActions.loadTrackSuccess,(state,{tracks}) =>({
+on(TrackActions.loadTracksSuccess ,(state,{tracks}) =>({
   ...state,
   tracks:tracks,
   loading :false,

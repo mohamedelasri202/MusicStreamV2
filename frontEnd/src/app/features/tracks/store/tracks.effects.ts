@@ -1,25 +1,25 @@
-import {Injectable } from '@angular/core'
-import {Actions, createEffect ,ofType} from '@ngrx/effects';
-import {of} from 'rxjs'
-import {map ,mergeMap ,catchError} from 'rxjs/operators'
-import * as TrackActions from 'tracks.actions'
-import {TrackService } from '../../../services/track-service';
+import { Injectable, inject } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators';
+import * as TrackActions from './tracks.actions';
+import { TrackService } from '../../../services/track-service';
+import { Track } from '../../../modules/track/track-module';
 
 @Injectable()
-export  class  TracksEffects{
+export class TracksEffects {
+  private actions$ = inject(Actions);
+  private trackService = inject(TrackService);
 
-  constructor(  private actions$:Actions,
-  private trackService:TrackService) {}
-
+  loadTracks$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TrackActions.loadTracks),
+      mergeMap(() =>
+        this.trackService.getTracks().pipe(
+          map((tracks: Track[]) => TrackActions.loadTracksSuccess({ tracks })),
+          catchError((error) => of(TrackActions.loadTrackFailure({ error: error.message })))
+        )
+      )
+    );
+  });
 }
-
-loadTracks$= createEffect(()=>
-this.actions$.pipe(
-  ofType(TrackActions.loadTracks),
-  mergeMap(()=>this.trackService.getTracks.pipe(
-    map(tracks =>TrackActions.loadTrackSuccess({tracks})),
-    catchError(error=>of(TrackActions.loadTrackFailure({error:error.message})))
-  ))
-)
-)
-
