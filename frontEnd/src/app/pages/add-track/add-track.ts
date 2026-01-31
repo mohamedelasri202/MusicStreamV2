@@ -1,19 +1,41 @@
-// import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-// import { CommonModule } from '@angular/common';
-// import { TrackService } from '../../services/track-service';
-// import { Track } from '../../modules/track/track-module';
-// import { Button } from '../../shared/components/button/button';
-// import { audit } from 'rxjs';
-//
-// @Component({
-//   selector: 'app-add-track',
-//   standalone: true,
-//   imports: [CommonModule, ReactiveFormsModule, Button],
-//   templateUrl: './add-track.html',
-//   styleUrl: './add-track.css',
-// })
-// export class AddTrack implements OnInit {
+import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { TrackService } from '../../services/track-service';
+import { Track } from '../../modules/track/track-module';
+import { Button } from '../../shared/components/button/button';
+import { audit } from 'rxjs';
+import {Store} from '@ngrx/store'
+import {TrackActions} from '../../features/tracks/store/tracks.actions'
+@Component({
+  selector: 'app-add-track',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, Button],
+  templateUrl: './add-track.html',
+  styleUrl: './add-track.css',
+})
+export class AddTrack  {
+
+
+
+  constructor(private store:Store) {
+  }
+
+
+
+
+
+  onSubmit(formValue:any){
+     const newTrack:Track ={
+       title:formValue.title,
+       artist:formValue.artist,
+       description:formValue.description,
+       category:formValue.category,
+       duration:0,
+       addedAt:''
+     }
+     this.store.dispatch(TrackActions.addTrack({track:newTrack}))
+  }
 //   private fb = inject(FormBuilder);
 //   private trackService = inject(TrackService);
 //
@@ -167,4 +189,4 @@
 //   }
 //
 //
-// }
+}

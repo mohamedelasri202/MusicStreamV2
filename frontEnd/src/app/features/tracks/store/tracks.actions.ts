@@ -11,4 +11,13 @@ export const loadTrackFailure  = createAction('[Track Api] load failed',
   props<{error :any}>()
 )
 
+// add track actions
+
+export const addTrack = createAction('[ Track from] add track',
+  props<{track:Track}>());
+export  const addingTrackSuccess =createAction ('[Track Api] adding track success' ,
+  props<{track:Track}>());
+export const addingTrackFailed = createAction('[Track api] adding track failed ',
+  props<{error:any}>());
+
 

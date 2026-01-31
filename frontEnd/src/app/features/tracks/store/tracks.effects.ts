@@ -22,4 +22,15 @@ export class TracksEffects {
       )
     );
   });
+
+  addingTrack$ = createEffect(()=>{
+    return this.actions$.pipe(
+      ofType(TrackActions.addTrack),
+      mergeMap(({track})=>this.trackService.addTrack().pipe(
+        map((track:Track) =>TrackActions.addingTrackSuccess({track})),
+          catchError((error)=>of(TrackActions.addingTrackFailed({error:error.message})))
+      )
+    )
+      );
+  })
 }

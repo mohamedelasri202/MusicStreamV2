@@ -71,9 +71,13 @@ export class TrackService {
   //     }
   //   }
 
+  addTrack():Observable<Track[]>{
+        return this.post<Track>(`${this.apiUrl}/addTrack`)
+  }
 
-  getTracks(): Observable<Track[]> {
-    return this.http.get<Track[]>(`${this.apiUrl}/tracks`);
+
+  getTracks(track:Track): Observable<Track[]> {
+    return this.http.get<Track[]>(`${this.apiUrl}/tracks`,track);
   }
 
 
