@@ -37,4 +37,22 @@ export class TracksEffects {
       )
     );
   });
+
+  deleteTrack$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TrackActions.deleteTrack),
+      mergeMap(({ id }) =>
+        this.trackService.deleteTrack(id).pipe(
+          map(() => {
+            console.log('✅ Delete successful, dispatching success for ID:', id);
+            return TrackActions.deleteTrackSuccess({ id });
+          }),
+          catchError((error) => {
+            console.log('❌ Delete failed:', error);
+            return of(TrackActions.deleteTrackFailed({ error: error.message }));
+          })
+        )
+      )
+    );
+  });
 }

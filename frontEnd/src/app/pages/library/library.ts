@@ -22,6 +22,7 @@ export class Library implements OnInit {
   // 1. Data Source from Store
   // We use a Signal to match your HTML usage: filteredTracks()
   private tracks$ = this.store.select(TrackSelectors.selectAllTracks);
+  isDeleting = this.store.selectSignal(TrackSelectors.selectIsDeleting);
 
   // 2. UI State Signals
   isFormVisible = false;
@@ -55,8 +56,8 @@ export class Library implements OnInit {
     this.isMenuOpen.set(false);
   }
 
-  deleteTrack(id: any) {
-    // Add logic here later
+  deleteTrack(id: number) {
+    this.store.dispatch(TrackActions.deleteTrack({id}));
     console.log('Delete ID:', id);
   }
 

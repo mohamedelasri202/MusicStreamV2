@@ -20,4 +20,13 @@ export  const addingTrackSuccess =createAction ('[Track Api] adding track succes
 export const addingTrackFailed = createAction('[Track api] adding track failed ',
   props<{error:any}>());
 
+// delete track actions
+export  const deleteTrack = createAction('[Track list] delete track',
+  props<{id:number}>());
+
+ export  const deleteTrackSuccess = createAction('[Track Api] delete Track success',
+   props<{id:number}>());
+
+ export  const deleteTrackFailed = createAction('[Track Api] delete Track failed',
+   props<{error:any}>());
 

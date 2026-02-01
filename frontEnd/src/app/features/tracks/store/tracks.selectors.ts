@@ -17,3 +17,7 @@ export  const selectTrackLoading = createSelector(
   (state)=>state.loading
 
 )
+export const selectIsDeleting = createSelector(
+  selectTrackState,
+  (state: TrackState) => state.isDeleting
+);

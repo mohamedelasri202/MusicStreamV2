@@ -90,6 +90,9 @@ export class TrackService {
     return formData;
   }
 
+  deleteTrack(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/deleteTrack/${id}`);
+  }
   getTracks(): Observable<Track[]> {
     return this.http.get<Track[]>(`${this.apiUrl}/tracks`);
   }

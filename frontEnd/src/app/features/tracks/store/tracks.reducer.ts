@@ -9,13 +9,16 @@ export interface TrackState{
   loading :boolean;
   isSaving:boolean,
   error :string | null;
+  isDeleting:boolean;
 }
 
 export  const initialState :TrackState = {
   tracks : [],
   loading:false,
   isSaving:false,
+  isDeleting:false,
   error:null
+
 
 }
 export  const trackReducer  = createReducer(initialState,
@@ -58,6 +61,20 @@ on(TrackActions.loadTracksSuccess ,(state,{tracks}) =>({
     ...state,
     error,
     isSaving:false
+  })),
+  on(TrackActions.deleteTrack,(state,{id}) =>({
+    ...state,
+    isDeleting:true
+    })),
+  on(TrackActions.deleteTrackSuccess,(state ,{id}) =>({
+    ...state,
+    tracks:state.tracks.filter(track=>track.id !== id),
+    isDeleting:false
+    })),
+  on(TrackActions.deleteTrackFailed,(state,{error})=>({
+        ...state,
+      error:error,
+    isDeleting:false
   }))
 
 

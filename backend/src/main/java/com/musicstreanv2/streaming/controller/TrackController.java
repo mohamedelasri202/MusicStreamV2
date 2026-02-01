@@ -34,9 +34,9 @@
 
         }
         @DeleteMapping("/deleteTrack/{id}")
-        public ResponseEntity<String> deleteTrack(@PathVariable long id){
+        public ResponseEntity<Void> deleteTrack(@PathVariable long id) {
             trackService.deleteTrack(id);
-            return ResponseEntity.ok("The Track Has been Deleted");
+            return ResponseEntity.noContent().build(); // Returns 204 No Content
         }
         @GetMapping("/tracks")
        public ResponseEntity<List<Track>>getAllTracks(){
