@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as TrackActions from '../../features/tracks/store/tracks.actions';
 import { Track } from '../../modules/track/track-module';
 import { Button } from '../../shared/components/button/button';
-import {TrackService} from '../../services/track-service'
+import { TrackService } from '../../services/track-service'
+import { Component, EventEmitter, Input, Output, inject, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-add-track',
@@ -14,20 +14,22 @@ import {TrackService} from '../../services/track-service'
   templateUrl: './add-track.html',
   styleUrl: './add-track.css',
 })
-export class AddTrack {
+export class AddTrack implements OnChanges {
   private fb = inject(FormBuilder);
   private store = inject(Store);
-   trackService =  inject(TrackService);
+  trackService = inject(TrackService);
 
   @Output() closeForm = new EventEmitter<void>();
   @Input() trackToEdit: Track | null = null;
 
-  // properties needed by your HTML
-  trackForm: FormGroup;
-  isSubmitting = false;
+  // --- ADD THESE MISSING PROPERTIES ---
   submissionError: string | null = null;
   fileError: string | null = null;
-  selectedFile: File | null = null;
+  isSubmitting = false; // Missing property from error
+  selectedFile: File | null = null; // Missing property used in onSubmit
+  // -------------------------------------
+
+  trackForm: FormGroup;
 
   constructor() {
     this.trackForm = this.fb.group({
@@ -38,40 +40,51 @@ export class AddTrack {
     });
   }
 
-  onClose() {
-    this.closeForm.emit();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['trackToEdit'] && this.trackToEdit) {
+      this.trackForm.patchValue({
+        title: this.trackToEdit.title,
+        artist: this.trackToEdit.artist,
+        category: this.trackToEdit.category,
+        description: this.trackToEdit.description
+      });
+    } else if (changes['trackToEdit'] && !this.trackToEdit) {
+      this.trackForm.reset({ category: 'pop' });
+    }
   }
 
+  // --- ADD THIS MISSING METHOD ---
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      console.log('File selected:', file.name);
     }
   }
 
   onSubmit() {
-    if (this.trackForm.invalid || !this.selectedFile) return;
+    if (this.trackForm.valid) {
+      this.isSubmitting = true;
+      const formValue = this.trackForm.value;
 
-    this.isSubmitting = true;
-    const v = this.trackForm.value;
+      const trackData: Track = {
+        ...formValue,
+        id: this.trackToEdit ? this.trackToEdit.id : undefined,
+        addedAt: this.trackToEdit ? this.trackToEdit.addedAt : new Date(),
+        duration: this.trackToEdit ? this.trackToEdit.duration : '0:00',
+        file: this.selectedFile || undefined, // Changed: only use selectedFile, or undefined
+      };
 
-    const newTrack: Track = {
-      title: v.title,
-      artist: v.artist,
-      category: v.category,
-      description: v.description ?? '',
-      file: this.selectedFile,
-      duration: '0:00',
-      addedAt: new Date(),
-    };
-
-    // Dispatch the action instead of calling service directly
-    this.store.dispatch(TrackActions.addTrack({ track: newTrack }));
-
-    // Reset form and close modal after dispatch
+      if (this.trackToEdit && this.trackToEdit.id) {
+        this.store.dispatch(TrackActions.updateTrack({ track: trackData }));
+      } else {
+        this.store.dispatch(TrackActions.addTrack({ track: trackData }));
+      }
+      this.onClose();
+    }
+  }
+  onClose() {
     this.isSubmitting = false;
-    this.trackForm.reset();
-    this.onClose(); // or handle this in the effect's success callback
+    this.selectedFile = null;
+    this.closeForm.emit();
   }
 }

@@ -75,6 +75,25 @@ on(TrackActions.loadTracksSuccess ,(state,{tracks}) =>({
         ...state,
       error:error,
     isDeleting:false
+  })),
+
+  // update reducers
+
+  on(TrackActions.updateTrack, (state) => ({
+    ...state,
+    isSaving: true
+  })),
+
+  on(TrackActions.updateTrackSuccess, (state, { track }) => ({
+    ...state,
+    tracks: state.tracks.map(t => t.id === track.id ? track : t),
+    isSaving: false
+  })),
+
+  on(TrackActions.updateTrackFailure, (state, { error }) => ({
+    ...state,
+    error: error,
+    isSaving: false
   }))
 
 

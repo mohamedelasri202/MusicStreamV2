@@ -38,6 +38,18 @@ export class TracksEffects {
     );
   });
 
+  updateTrack$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TrackActions.updateTrack),
+      mergeMap(({ track }) =>
+        this.trackService.updateTrack(track).pipe(
+          map((updatedTrack) => TrackActions.updateTrackSuccess({ track: updatedTrack })),
+          catchError((error) => of(TrackActions.updateTrackFailure({ error: error.message })))
+        )
+      )
+    )
+  );
+
   deleteTrack$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TrackActions.deleteTrack),

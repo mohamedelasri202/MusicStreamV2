@@ -30,3 +30,19 @@ export  const deleteTrack = createAction('[Track list] delete track',
  export  const deleteTrackFailed = createAction('[Track Api] delete Track failed',
    props<{error:any}>());
 
+// update actions
+
+export const updateTrack = createAction(
+  '[Track List] Update Track',
+  props<{ track: Track }>()
+);
+
+export const updateTrackSuccess = createAction(
+  '[Track API] Update Track Success',
+  props<{ track: Track }>()
+);
+
+export const updateTrackFailure = createAction(
+  '[Track API] Update Track Failure',
+  props<{ error: string }>()
+);

@@ -14,7 +14,10 @@
 
     @RestController
     @RequestMapping("/api/track")
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(
+            origins = "http://localhost:4200",
+            methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+            allowedHeaders = "*")
     public class TrackController {
 
         private final TrackService trackService;
@@ -28,10 +31,12 @@
             return ResponseEntity.ok(trackService.addTrack(dto));
         }
 
-        @PutMapping(value = "/updateTrack/{id}", consumes = "multipart/form-data")
-        public ResponseEntity<TrackResponseDto>updateTrack(@PathVariable long id ,@ModelAttribute TrackRequestDto dto){
-            return  ResponseEntity.ok(trackService.updateTrack(dto,id));
-
+        @PutMapping(value = "/updateTrack/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ResponseEntity<TrackResponseDto> updateTrack(
+                @PathVariable long id,
+                @ModelAttribute TrackRequestDto dto
+        ) {
+            return ResponseEntity.ok(trackService.updateTrack(dto, id));
         }
         @DeleteMapping("/deleteTrack/{id}")
         public ResponseEntity<Void> deleteTrack(@PathVariable long id) {

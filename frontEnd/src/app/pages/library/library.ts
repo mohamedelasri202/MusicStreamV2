@@ -56,6 +56,7 @@ export class Library implements OnInit {
     this.isMenuOpen.set(false);
   }
 
+
   deleteTrack(id: number) {
     this.store.dispatch(TrackActions.deleteTrack({id}));
     console.log('Delete ID:', id);

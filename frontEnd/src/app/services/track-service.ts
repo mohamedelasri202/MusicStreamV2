@@ -85,9 +85,20 @@ export class TrackService {
     formData.append('artist', track.artist);
     formData.append('category', track.category);
     formData.append('description', track.description ?? '');
-    formData.append('file', track.file); // or 'audioFile' if DTO uses that
+
+    // Only append file if it exists AND is a File object
+    if (track.file && track.file instanceof File) {
+      formData.append('file', track.file);
+    }
 
     return formData;
+  }
+
+  updateTrack(track: Track): Observable<Track> {
+    return this.http.put<Track>(
+      `${this.apiUrl}/updateTrack/${track.id}`,
+      this.toFormData(track)  // Use the same toFormData method as addTrack
+    );
   }
 
   deleteTrack(id: number): Observable<void> {
