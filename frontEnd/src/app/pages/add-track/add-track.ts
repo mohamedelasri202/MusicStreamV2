@@ -1,12 +1,12 @@
-import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TrackService } from '../../services/track-service';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import * as TrackActions from '../../features/tracks/store/tracks.actions';
 import { Track } from '../../modules/track/track-module';
 import { Button } from '../../shared/components/button/button';
-import { audit } from 'rxjs';
-import {Store} from '@ngrx/store'
-import {TrackActions} from '../../features/tracks/store/tracks.actions'
+import {TrackService} from '../../services/track-service'
+
 @Component({
   selector: 'app-add-track',
   standalone: true,
@@ -14,179 +14,64 @@ import {TrackActions} from '../../features/tracks/store/tracks.actions'
   templateUrl: './add-track.html',
   styleUrl: './add-track.css',
 })
-export class AddTrack  {
+export class AddTrack {
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+   trackService =  inject(TrackService);
 
+  @Output() closeForm = new EventEmitter<void>();
+  @Input() trackToEdit: Track | null = null;
 
+  // properties needed by your HTML
+  trackForm: FormGroup;
+  isSubmitting = false;
+  submissionError: string | null = null;
+  fileError: string | null = null;
+  selectedFile: File | null = null;
 
-  constructor(private store:Store) {
+  constructor() {
+    this.trackForm = this.fb.group({
+      title: ['', [Validators.required, Validators.maxLength(50)]],
+      artist: ['', [Validators.required]],
+      category: ['pop', [Validators.required]],
+      description: ['', [Validators.maxLength(200)]]
+    });
   }
 
-
-
-
-
-  onSubmit(formValue:any){
-     const newTrack:Track ={
-       title:formValue.title,
-       artist:formValue.artist,
-       description:formValue.description,
-       category:formValue.category,
-       duration:0,
-       addedAt:''
-     }
-     this.store.dispatch(TrackActions.addTrack({track:newTrack}))
+  onClose() {
+    this.closeForm.emit();
   }
-//   private fb = inject(FormBuilder);
-//   private trackService = inject(TrackService);
-//
-//   @Output() closeForm = new EventEmitter<void>();
-//
-//   trackDuration: string = '';
-//
-//
-//   private _trackToEdit: Track | null = null;
-//
-//   onClose() {
-//     this.closeForm.emit();
-//   }
-//
-//
-//   @Input() set trackToEdit(value: Track | null) {
-//     this._trackToEdit = value;
-//     if (value) {
-//
-//       this.trackForm.patchValue(value);
-//       this.trackDuration = value.duration || ''
-//     } else {
-//
-//       this.trackForm.reset({ category: 'pop' });
-//     }
-//   }
-//
-//
-//   get trackToEdit(): Track | null {
-//     return this._trackToEdit;
-//   }
-//
-//   trackForm: FormGroup;
-//   selectedFile: File | null = null;
-//   fileError: string | null = null;
-//
-//   constructor() {
-//
-//     this.trackForm = this.fb.group({
-//       title: ['', [Validators.required, Validators.maxLength(50), this.noWhitespaceValidator, this.specialCharValidator]],
-//       artist: ['', [Validators.required, this.noWhitespaceValidator, this.specialCharValidator]],
-//       category: ['pop', [Validators.required]],
-//       description: ['', [Validators.maxLength(200)]]
-//     });
-//   }
-//
-//
-//   noWhitespaceValidator(control: any) {
-//     const isWhitespace = (control.value || '').trim().length === 0;
-//     const isValid = !isWhitespace;
-//     return isValid ? null : { 'whitespace': true };
-//   }
-//
-//
-//   specialCharValidator(control: any) {
-//     if (!control.value) return null;
-//
-//     const validRegex = /^[a-zA-Z0-9\s\u00C0-\u017F\.,'?!(\)\-]+$/;
-//     const isValid = validRegex.test(control.value);
-//     return isValid ? null : { 'specialChar': true };
-//   }
-//
-//   ngOnInit(): void {
-//
-//   }
-//
-//
-//
-//   isSubmitting = false;
-//   submissionError: string | null = null;
-//
-//   onFileSelected(event: any) {
-//     const file = event.target.files[0];
-//     if (file) {
-//       this.fileError = null;
-//       this.selectedFile = null;
-//
-//       if (file.size > 10 * 1024 * 1024) {
-//         this.fileError = "File is too large (Max 10MB)";
-//         return;
-//       }
-//
-//
-//       const validTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp3'];
-//       if (!validTypes.includes(file.type)) {
-//         this.fileError = "Invalid format. Only MP3, WAV, and OGG are allowed.";
-//         return;
-//       }
-//
-//       this.selectedFile = file;
-//       const objectUrl = URL.createObjectURL(file);
-//       const audio = new Audio();
-//       audio.src = objectUrl;
-//
-//       audio.onloadedmetadata = () => {
-//         const seconds = audio.duration;
-//         this.trackDuration = this.formatDurationTime(seconds)
-//         URL.revokeObjectURL(objectUrl)
-//       }
-//
-//       audio.onerror = () => {
-//         this.fileError = "Could not load audio file. It might be corrupted.";
-//         this.selectedFile = null;
-//       }
-//     }
-//   }
-//
-//   formatDurationTime(seconds: number): string {
-//     const minutes = Math.floor(seconds / 60);
-//     const secs = Math.floor(seconds % 60);
-//     return `${minutes}:${secs.toString().padStart(2, '0')}`;
-//   }
-//
-//   async onSubmit() {
-//     this.submissionError = null;
-//     const isFileReady = this.trackToEdit || this.selectedFile;
-//
-//     if (this.trackForm.valid && isFileReady) {
-//       this.isSubmitting = true;
-//
-//       const trackData: Track = {
-//         ...this.trackForm.value,
-//         file: this.selectedFile || this.trackToEdit?.file,
-//         addedAt: this.trackToEdit ? this.trackToEdit.addedAt : new Date(),
-//
-//         duration: this.trackDuration
-//       };
-//
-//       try {
-//         if (this.trackToEdit) {
-//           trackData.id = this.trackToEdit.id;
-//           await this.trackService.updateTrack(trackData);
-//         } else {
-//           await this.trackService.addTrack(trackData);
-//         }
-//
-//         this.onClose();
-//         this.trackForm.reset({ category: 'pop' });
-//         this.selectedFile = null;
-//         this._trackToEdit = null;
-//
-//       } catch (error) {
-//         console.error('Operation failed:', error);
-//         this.submissionError = "Failed to save track. Please try again.";
-//       } finally {
-//         this.isSubmitting = false;
-//       }
-//     } else {
-//       this.trackForm.markAllAsTouched();
-//     }
-//   }
-//
-//
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      console.log('File selected:', file.name);
+    }
+  }
+
+  onSubmit() {
+    if (this.trackForm.invalid || !this.selectedFile) return;
+
+    this.isSubmitting = true;
+    const v = this.trackForm.value;
+
+    const newTrack: Track = {
+      title: v.title,
+      artist: v.artist,
+      category: v.category,
+      description: v.description ?? '',
+      file: this.selectedFile,
+      duration: '0:00',
+      addedAt: new Date(),
+    };
+
+    // Dispatch the action instead of calling service directly
+    this.store.dispatch(TrackActions.addTrack({ track: newTrack }));
+
+    // Reset form and close modal after dispatch
+    this.isSubmitting = false;
+    this.trackForm.reset();
+    this.onClose(); // or handle this in the effect's success callback
+  }
 }

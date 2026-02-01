@@ -22,28 +22,28 @@ export class PlayerControls {
  onVolumeChange(event: Event) {
   const input = event.target as HTMLInputElement;
   const value = Number(input.value);
-  
+
   this.audioService.setVolume(value);
 
 }
 
-favorite() {
-  this.currentTrack.update(track => {
-    if (!track) return track;
-    return { ...track, favorite: !track.favorite };
-  });
-}
+// favorite() {
+//   this.currentTrack.update(track => {
+//     if (!track) return track;
+//     return { ...track, favorite: !track.favorite };
+//   });
+// }
 
 
-     
 
-      
+
+
     }
 
 
 
-  
- 
+
+
 
 
 

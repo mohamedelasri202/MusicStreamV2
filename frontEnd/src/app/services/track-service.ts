@@ -71,14 +71,29 @@ export class TrackService {
   //     }
   //   }
 
-  addTrack():Observable<Track[]>{
-        return this.post<Track>(`${this.apiUrl}/addTrack`)
+  addTrack(track: Track): Observable<Track> {
+    return this.http.post<Track>(
+      `${this.apiUrl}/addTrack`,
+      this.toFormData(track)
+    );
   }
 
+  private toFormData(track: Track): FormData {
+    const formData = new FormData();
 
-  getTracks(track:Track): Observable<Track[]> {
-    return this.http.get<Track[]>(`${this.apiUrl}/tracks`,track);
+    formData.append('title', track.title);
+    formData.append('artist', track.artist);
+    formData.append('category', track.category);
+    formData.append('description', track.description ?? '');
+    formData.append('file', track.file); // or 'audioFile' if DTO uses that
+
+    return formData;
   }
+
+  getTracks(): Observable<Track[]> {
+    return this.http.get<Track[]>(`${this.apiUrl}/tracks`);
+  }
+
 
 
 }

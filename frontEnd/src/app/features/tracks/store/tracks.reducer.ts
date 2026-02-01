@@ -7,7 +7,7 @@ import * as TrackActions from './tracks.actions'
 export interface TrackState{
   tracks :Track[];
   loading :boolean;
-  isSaving:false,
+  isSaving:boolean,
   error :string | null;
 }
 

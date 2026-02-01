@@ -9,7 +9,7 @@ export interface Track {
   category:string;
   duration:string;
   addedAt:Date;
-  file:Blob;
-  favorite:boolean 
+  file:File;
 
-} 
+
+}

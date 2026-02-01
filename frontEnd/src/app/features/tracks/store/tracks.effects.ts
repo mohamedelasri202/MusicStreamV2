@@ -23,14 +23,18 @@ export class TracksEffects {
     );
   });
 
-  addingTrack$ = createEffect(()=>{
+
+
+  addingTrack$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TrackActions.addTrack),
-      mergeMap(({track})=>this.trackService.addTrack().pipe(
-        map((track:Track) =>TrackActions.addingTrackSuccess({track})),
-          catchError((error)=>of(TrackActions.addingTrackFailed({error:error.message})))
+      mergeMap(({ track }) =>
+        this.trackService.addTrack(track).pipe( // 👈 This calls the POST
+
+          map((newTrack: Track) => TrackActions.addingTrackSuccess({ track: newTrack })),
+          catchError((error) => of(TrackActions.addingTrackFailed({ error: error.message })))
+        )
       )
-    )
-      );
-  })
+    );
+  });
 }
