@@ -20,7 +20,7 @@ import {Track} from '../../modules/track/track-module'
 })
 export class Library implements OnInit {
   private store = inject(Store);
-  private audioService = inject(AudioPlayerService);
+  public audioService = inject(AudioPlayerService);
 
 
   private tracks$ = this.store.select(TrackSelectors.selectAllTracks);

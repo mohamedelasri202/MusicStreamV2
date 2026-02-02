@@ -58,7 +58,7 @@
               </div>
 
               <div class="col-span-1 text-right text-neutral-500 text-sm font-mono">
-                {{ track.duration || '--:--' }}
+                {{ audioService.formatTime(track.duration) }}
               </div>
 
               <div class="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
