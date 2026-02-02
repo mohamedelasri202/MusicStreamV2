@@ -22,12 +22,11 @@ export class AddTrack implements OnChanges {
   @Output() closeForm = new EventEmitter<void>();
   @Input() trackToEdit: Track | null = null;
 
-  // --- ADD THESE MISSING PROPERTIES ---
+
   submissionError: string | null = null;
   fileError: string | null = null;
-  isSubmitting = false; // Missing property from error
-  selectedFile: File | null = null; // Missing property used in onSubmit
-  // -------------------------------------
+  isSubmitting = false;
+  selectedFile: File | null = null;
 
   trackForm: FormGroup;
 
@@ -53,7 +52,7 @@ export class AddTrack implements OnChanges {
     }
   }
 
-  // --- ADD THIS MISSING METHOD ---
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {

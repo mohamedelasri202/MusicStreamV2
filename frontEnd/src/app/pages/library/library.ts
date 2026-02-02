@@ -4,10 +4,12 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 
-// Update these paths to match your actual folder structure
+
 import * as TrackActions from '../../features/tracks/store/tracks.actions';
 import * as TrackSelectors from '../../features/tracks/store/tracks.selectors';
 import { AddTrack } from '../add-track/add-track'; // Your child component
+import  {AudioPlayerService} from '../../services/audio-player-service'
+import {Track} from '../../modules/track/track-module'
 // import { FilterMenu } from '../shared/components/filter-menu/filter-menu';
 
 @Component({
@@ -18,9 +20,9 @@ import { AddTrack } from '../add-track/add-track'; // Your child component
 })
 export class Library implements OnInit {
   private store = inject(Store);
+  private audioService = inject(AudioPlayerService);
 
-  // 1. Data Source from Store
-  // We use a Signal to match your HTML usage: filteredTracks()
+
   private tracks$ = this.store.select(TrackSelectors.selectAllTracks);
   isDeleting = this.store.selectSignal(TrackSelectors.selectIsDeleting);
 
@@ -31,15 +33,22 @@ export class Library implements OnInit {
   selectedTrack = null;
 
   ngOnInit(): void {
-    // 3. Trigger the load
+
     this.store.dispatch(TrackActions.loadTracks());
+
+
+    this.store.select(TrackSelectors.selectAllTracks).subscribe(tracks => {
+      if (tracks && tracks.length > 0) {
+
+        this.audioService.setPlaylist(tracks);
+      }
+    });
   }
 
-  // This matches the @for loop in your HTML
+
   filteredTracks = signal<any[]>([]);
 
   constructor() {
-    // Sync the store data to our local signal
     this.tracks$.subscribe(t => this.filteredTracks.set(t));
   }
 
@@ -67,7 +76,9 @@ export class Library implements OnInit {
     this.isFormVisible = true;
   }
 
-  playTrack(track: any) {
-    console.log('Playing:', track.title);
+  playTrack(track: Track) {
+    console.log('Playing track:', track.title);
+
+    this.audioService.loadTrack(track);
   }
 }

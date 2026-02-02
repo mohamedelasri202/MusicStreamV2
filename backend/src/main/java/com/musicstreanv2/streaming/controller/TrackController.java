@@ -4,12 +4,15 @@
     import com.musicstreanv2.streaming.dto.TrackResponseDto;
     import com.musicstreanv2.streaming.modul.Track;
     import com.musicstreanv2.streaming.service.serviceInterface.TrackService;
-    import org.jaudiotagger.tag.id3.framebody.FrameBodyTRCK;
+    import org.springframework.core.io.Resource;
+
+    import org.springframework.http.HttpHeaders;
     import org.springframework.http.MediaType;
     import org.springframework.http.ResponseEntity;
-    import org.springframework.stereotype.Controller;
+
     import org.springframework.web.bind.annotation.*;
 
+    import java.io.IOException;
     import java.util.List;
 
     @RestController
@@ -49,6 +52,17 @@
             return ResponseEntity.ok(trackService.getAllTracks());
 
         }
+        @GetMapping("/stream/{id}")
+        public ResponseEntity<Resource> streamTrack(@PathVariable long id) throws IOException{
 
+            Resource resource = trackService.getTrackResource(id);
+
+            return ResponseEntity.ok()
+
+                    .contentType(MediaType.parseMediaType("audio/mpeg"))
+
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        }
     }
 

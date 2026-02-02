@@ -6,6 +6,7 @@ import com.musicstreanv2.streaming.mapper.TrackMapper;
 import com.musicstreanv2.streaming.modul.Track;
 import com.musicstreanv2.streaming.repository.TrackRepository;
 import com.musicstreanv2.streaming.service.serviceInterface.TrackService;
+
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.apache.logging.log4j.CloseableThreadContext;
@@ -16,6 +17,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
+
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.List;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class  TrackInterfaceImpl  implements TrackService {
@@ -77,6 +84,7 @@ public class  TrackInterfaceImpl  implements TrackService {
 
 
     }
+
     @Override
     public void deleteTrack(long id){
         Track track = trackRepository.findById(id).orElseThrow(()-> new RuntimeException("thers no track with this Id"));
@@ -102,6 +110,25 @@ public class  TrackInterfaceImpl  implements TrackService {
 
     }
 
+    @Override
+    public Resource getTrackResource(long id) {
+
+        Track track = trackRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("There is no track with this ID: " + id));
+
+
+        Path path = Paths.get(track.getFilePath());
+
+
+        Resource resource = new FileSystemResource(path);
+
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("The audio file could not be found or read at: " + track.getFilePath());
+        }
+
+        return resource;
+    }
     @Transactional
     @Override
     public String saveFile(MultipartFile file) {

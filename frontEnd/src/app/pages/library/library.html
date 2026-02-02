@@ -1,87 +1,87 @@
-<div class="min-h-screen bg-black text-white pb-32">
-  <div class="max-w-7xl mx-auto px-6 pt-8">
+  <div class="min-h-screen bg-black text-white pb-32">
+    <div class="max-w-7xl mx-auto px-6 pt-8">
 
-    <div class="flex items-end justify-between mb-8 pb-4 border-b border-white/10">
-      <div>
-        <h1 class="text-6xl font-black tracking-tight mb-2">Library</h1>
-        <p class="text-neutral-400 font-medium">Your personal collection</p>
+      <div class="flex items-end justify-between mb-8 pb-4 border-b border-white/10">
+        <div>
+          <h1 class="text-6xl font-black tracking-tight mb-2">Library</h1>
+          <p class="text-neutral-400 font-medium">Your personal collection</p>
+        </div>
+
+        <button (click)="togleForm()"
+                class="flex items-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-400 text-black rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add New Song
+        </button>
       </div>
 
-      <button (click)="togleForm()"
-              class="flex items-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-400 text-black rounded-full font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Add New Song
-      </button>
+      <section *ngIf="isFormVisible" class="mb-12 bg-neutral-900/50 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="text-neutral-400 text-sm font-bold uppercase tracking-wider mb-4">
+          {{ selectedTrack ? 'Editing Track' : 'Upload Station' }}
+        </div>
+        <app-add-track [trackToEdit]="selectedTrack" (closeForm)="togleForm()"></app-add-track>
+      </section>
+
+      <section>
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold">All Tracks</h2>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 text-neutral-400 border-b border-white/10 pb-2 px-4 text-xs font-bold uppercase tracking-wider">
+          <div class="col-span-1">#</div>
+          <div class="col-span-4">Title</div>
+          <div class="col-span-3">Artist</div>
+          <div class="col-span-2">Date Added</div>
+          <div class="col-span-1 text-right">Duration</div>
+          <div class="col-span-1 text-center">Action</div>
+        </div>
+
+        <div class="mt-2 space-y-1">
+          @for (track of filteredTracks(); track track.id; let i = $index) {
+            <div (click)="playTrack(track)"
+                 class="group grid grid-cols-12 gap-4 items-center px-4 py-3 rounded-md hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+
+              <div class="col-span-1 text-neutral-400 font-medium">{{i + 1}}</div>
+
+              <div class="col-span-4 min-w-0">
+                <div class="font-semibold truncate text-white text-base">{{track.title}}</div>
+                <div class="text-xs text-neutral-500 truncate group-hover:text-neutral-400">{{track.category}}</div>
+              </div>
+
+              <div class="col-span-3 text-neutral-400 text-sm truncate group-hover:text-white">
+                {{track.artist}}
+              </div>
+
+              <div class="col-span-2 text-neutral-500 text-sm font-light">
+                {{track.addedAt | date:'shortDate'}}
+              </div>
+
+              <div class="col-span-1 text-right text-neutral-500 text-sm font-mono">
+                {{ track.duration || '--:--' }}
+              </div>
+
+              <div class="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="updateTrack(track); $event.stopPropagation()"
+                        class="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 rounded-full transition-colors"
+                        title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+
+                <button (click)="deleteTrack(track.id); $event.stopPropagation()"
+                        class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
+                        title="Delete">
+                  <svg *ngIf="!isDeleting()" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span *ngIf="isDeleting()" class="text-[10px] animate-pulse">...</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
     </div>
-
-    <section *ngIf="isFormVisible" class="mb-12 bg-neutral-900/50 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
-      <div class="text-neutral-400 text-sm font-bold uppercase tracking-wider mb-4">
-        {{ selectedTrack ? 'Editing Track' : 'Upload Station' }}
-      </div>
-      <app-add-track [trackToEdit]="selectedTrack" (closeForm)="togleForm()"></app-add-track>
-    </section>
-
-    <section>
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold">All Tracks</h2>
-      </div>
-
-      <div class="grid grid-cols-12 gap-4 text-neutral-400 border-b border-white/10 pb-2 px-4 text-xs font-bold uppercase tracking-wider">
-        <div class="col-span-1">#</div>
-        <div class="col-span-4">Title</div>
-        <div class="col-span-3">Artist</div>
-        <div class="col-span-2">Date Added</div>
-        <div class="col-span-1 text-right">Duration</div>
-        <div class="col-span-1 text-center">Action</div>
-      </div>
-
-      <div class="mt-2 space-y-1">
-        @for (track of filteredTracks(); track track.id; let i = $index) {
-          <div (click)="playTrack(track)"
-               class="group grid grid-cols-12 gap-4 items-center px-4 py-3 rounded-md hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-white/5">
-
-            <div class="col-span-1 text-neutral-400 font-medium">{{i + 1}}</div>
-
-            <div class="col-span-4 min-w-0">
-              <div class="font-semibold truncate text-white text-base">{{track.title}}</div>
-              <div class="text-xs text-neutral-500 truncate group-hover:text-neutral-400">{{track.category}}</div>
-            </div>
-
-            <div class="col-span-3 text-neutral-400 text-sm truncate group-hover:text-white">
-              {{track.artist}}
-            </div>
-
-            <div class="col-span-2 text-neutral-500 text-sm font-light">
-              {{track.addedAt | date:'shortDate'}}
-            </div>
-
-            <div class="col-span-1 text-right text-neutral-500 text-sm font-mono">
-              {{ track.duration || '--:--' }}
-            </div>
-
-            <div class="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button (click)="updateTrack(track); $event.stopPropagation()"
-                      class="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 rounded-full transition-colors"
-                      title="Edit">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </button>
-
-              <button (click)="deleteTrack(track.id); $event.stopPropagation()"
-                      class="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
-                      title="Delete">
-                <svg *ngIf="!isDeleting()" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                <span *ngIf="isDeleting()" class="text-[10px] animate-pulse">...</span>
-              </button>
-            </div>
-          </div>
-        }
-      </div>
-    </section>
   </div>
-</div>

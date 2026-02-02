@@ -29,7 +29,7 @@ export class TracksEffects {
     return this.actions$.pipe(
       ofType(TrackActions.addTrack),
       mergeMap(({ track }) =>
-        this.trackService.addTrack(track).pipe( // 👈 This calls the POST
+        this.trackService.addTrack(track).pipe(
 
           map((newTrack: Track) => TrackActions.addingTrackSuccess({ track: newTrack })),
           catchError((error) => of(TrackActions.addingTrackFailed({ error: error.message })))
@@ -56,11 +56,11 @@ export class TracksEffects {
       mergeMap(({ id }) =>
         this.trackService.deleteTrack(id).pipe(
           map(() => {
-            console.log('✅ Delete successful, dispatching success for ID:', id);
+            // console.log('Delete successful, dispatching success for ID:', id);
             return TrackActions.deleteTrackSuccess({ id });
           }),
           catchError((error) => {
-            console.log('❌ Delete failed:', error);
+            // console.log(' Delete failed:', error);
             return of(TrackActions.deleteTrackFailed({ error: error.message }));
           })
         )

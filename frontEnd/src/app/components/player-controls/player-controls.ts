@@ -27,12 +27,7 @@ export class PlayerControls {
 
 }
 
-// favorite() {
-//   this.currentTrack.update(track => {
-//     if (!track) return track;
-//     return { ...track, favorite: !track.favorite };
-//   });
-// }
+
 
 
 

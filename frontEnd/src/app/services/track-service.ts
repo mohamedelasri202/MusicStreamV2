@@ -86,7 +86,7 @@ export class TrackService {
     formData.append('category', track.category);
     formData.append('description', track.description ?? '');
 
-    // Only append file if it exists AND is a File object
+
     if (track.file && track.file instanceof File) {
       formData.append('file', track.file);
     }

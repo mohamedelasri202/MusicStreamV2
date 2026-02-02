@@ -7,7 +7,7 @@ import { toArray } from 'rxjs';
   providedIn: 'root',
 })
 export class AudioPlayerService {
-  
+
   private zone = inject(NgZone)
   private storage = inject(StorageService)
   public audio  = new Audio;
@@ -15,7 +15,7 @@ export class AudioPlayerService {
   currentTrack = signal<Track | null>(null);
   volume = signal <number>(0.5);
   progress = signal <number>(0);
-  favorite :boolean = false;
+  private playlist: Track[] = [];
 
   constructor(){
 
@@ -25,7 +25,7 @@ this.audio.addEventListener('timeupdate', () => {
     const total = this.audio.duration;
 
     if (total > 0) {
-      
+
       const percentage = (current / total) * 100;
       this.progress.set(percentage);
     }
@@ -40,75 +40,97 @@ this.audio.addEventListener('timeupdate', () => {
 });
     this.audio.addEventListener('pause',()=>this.state.set('paused'))
     this.audio.addEventListener('waiting',()=>this.state.set('buffering'))
-    this.audio.addEventListener('ended',()=>this.state.set('stopped'))
+    this.audio.addEventListener('ended', () => {
+      this.zone.run(async () => {
+        console.log("Song ended, moving to next...");
+        const current = this.currentTrack();
+        if (current) {
+          await this.goToNext();
+        } else {
+          this.state.set('stopped');
+        }
+      });
+    })
   }
 
-  loadTrack(track:Track){
+  setPlaylist(tracks: Track[]) {
+    this.playlist = tracks;
+    console.log("Playlist updated in service! Total songs:", this.playlist.length);
+  }
+
+
+  loadTrack(track: Track) {
     this.currentTrack.set(track);
-    const  url = URL.createObjectURL(track.file);
-    this.audio.src = url;
+
+    if (track.file instanceof Blob) {
+      const url = URL.createObjectURL(track.file);
+      this.audio.src = url;
+    }
+
+    else {
+
+      this.audio.src = `http://localhost:8080/api/track/stream/${track.id}`;
+    }
+
     this.audio.load();
     this.play();
-
   }
 
   play() {
   if (this.currentTrack()) {
     this.audio.play();
-    this.state.set('playing'); 
+    this.state.set('playing');
     console.log("State set to playing");
   }
 }
 
   pause() {
   this.audio.pause();
-  this.state.set('paused'); 
+  this.state.set('paused');
   console.log("State set to paused");
 }
 
   setVolume(value: number) {
- 
+
   this.volume.set(value);
-  
- 
+
+
   this.audio.volume = value / 100;
 }
-  async goToNext(track:Track){
-    
-     const currentTrack = this.currentTrack();
-     if(!currentTrack) return
-    const playlist =  await this.storage.tracks.toArray();
-    const currentIndex = playlist.findIndex(t => t.id === currentTrack.id);
-    const nextIndex = currentIndex + 1
-    if(nextIndex < playlist.length){
-      const nextTrack = playlist[nextIndex]
-      this.loadTrack(nextTrack);
-    }else{
-      console.log("no more songs in the list")
-    }
+
+
+  async goToNext() {
+    const current = this.currentTrack();
+    if (!current || this.playlist.length === 0) return;
+
+
+    const currentIndex = this.playlist.findIndex(t => String(t.id) === String(current.id));
+
+
+    const nextIndex = (currentIndex + 1) % this.playlist.length;
+
+    this.loadTrack(this.playlist[nextIndex]);
   }
 
-  async goBack(track:Track){
-    const currentTrack = this.currentTrack()
-      if(!currentTrack) return 
-      const playlist =  await this.storage.tracks.toArray()
-       const currentIndex  = playlist.findIndex(t=> t.id === currentTrack.id);
-       if(currentIndex > 0){
-        const prevIndex = currentIndex - 1
-        const prevTrack = playlist[prevIndex]
-        this.loadTrack(prevTrack)
-       }
-       
-    
-  }
 
+  async goBack() {
+    const current = this.currentTrack();
+    if (!current || this.playlist.length === 0) return;
+
+    const currentIndex = this.playlist.findIndex(t => String(t.id) === String(current.id));
+
+
+    const prevIndex = (currentIndex - 1 + this.playlist.length) % this.playlist.length;
+
+    this.loadTrack(this.playlist[prevIndex]);
+  }
   formatTime(seconds: number): string {
   if (!seconds || isNaN(seconds)) return '0:00';
 
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
-  
- 
+
+
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
