@@ -124,15 +124,19 @@ this.audio.addEventListener('timeupdate', () => {
 
     this.loadTrack(this.playlist[prevIndex]);
   }
-  formatTime(seconds: number): string {
-  if (!seconds || isNaN(seconds)) return '0:00';
+  // src/app/services/audio-player-service.ts
 
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
+  formatTime(seconds: any): string {
+    // The '+' sign converts a string like "210" into the number 210
+    const totalSeconds = +seconds;
 
+    if (!totalSeconds || isNaN(totalSeconds)) return '0:00';
 
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = Math.floor(totalSeconds % 60);
+
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
 
 
 

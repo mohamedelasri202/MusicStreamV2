@@ -16,24 +16,24 @@ import { Track } from '../../modules/track/track-module';
 export class TrackDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private uiService = inject(UiService);
-  private store = inject(Store); // 3. Inject the Store
+  private store = inject(Store);
 
-  // 4. Create a signal from the store selector
+
   private allTracks = this.store.selectSignal(selectAllTracks);
 
   ngOnInit() {
     this.uiService.setSearchVisibility(false);
   }
 
-  // 5. Use the signal we created above to find the track
+
   track = computed(() => {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return null;
 
     const id = Number(idParam);
-    const tracks = this.allTracks(); // Get the current tracks from the store signal
+    const tracks = this.allTracks();
 
-    // Explicitly type 't' as Track to fix the second error
+
     return tracks.find((t: Track) => t.id === id);
   });
 }
