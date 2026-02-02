@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build backEnd with Maven
+      - name: Build Backend with Maven
         run: |
           cd backEnd
           mvn clean package -DskipTests 
