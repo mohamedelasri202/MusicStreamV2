@@ -1,0 +1,41 @@
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: music-db
+    restart: always
+    environment:
+      POSTGRES_DB: music
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mohamed@1230
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+
+  backend:
+    build: ./backEnd
+    container_name: music-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/music
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mohamed@1230
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+
+  frontend:
+    build: ./frontEnd
+    container_name: music-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pg_data:
