@@ -31,35 +31,34 @@ class TrackServiceTest {
     private TrackMapper trackMapper;
 
     @InjectMocks
-    @Spy // Important: We Spy on the implementation to stub internal calls
+    @Spy
     private TrackInterfaceImpl trackService;
 
     @Test
     void testAddTrack() throws IOException {
-        // 1. Arrange
+
         TrackRequestDto request = new TrackRequestDto();
         request.setTitle("Test Song");
 
-        // Mock the MultipartFile so it doesn't return null streams
+
         MultipartFile mockFile = mock(MultipartFile.class);
         request.setFile(mockFile);
 
         Track trackEntity = new Track();
 
-        // STUBBING: Prevent real file system calls
-        // We tell Mockito: "When saveFile is called, just return this string"
+
         doReturn("fake/path/music.mp3").when(trackService).saveFile(any());
-        // We tell Mockito: "When audioDuration is called, just return 180.0"
+
         doReturn(180.0).when(trackService).audioDuration(any());
 
         when(trackMapper.toEntity(request)).thenReturn(trackEntity);
         when(trackRepository.save(any(Track.class))).thenReturn(trackEntity);
         when(trackMapper.toDto(any())).thenReturn(new TrackResponseDto());
 
-        // 2. Act
+
         TrackResponseDto result = trackService.addTrack(request);
 
-        // 3. Assert
+
         assertNotNull(result);
         verify(trackRepository).save(any());
         verify(trackService).saveFile(any()); // Verify our "fake" method was called
