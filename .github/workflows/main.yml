@@ -20,7 +20,7 @@ jobs:
           cache: maven
 
       - name: Build Backend with Maven
-        # Matches the lowercase 'backend' in your GitHub screenshot
+
         run: |
           cd backend
           mvn clean package -DskipTests 
@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          # Matches the 'frontEnd' in your GitHub screenshot
+
           cache-dependency-path: frontEnd/package-lock.json
 
       - name: Install Dependencies
